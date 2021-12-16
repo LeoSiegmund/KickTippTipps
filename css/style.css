@@ -1,0 +1,13 @@
+.table{
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    font-weight: bold;
+    min-width: 500px;
+    min-height: 400px;
+}
+
+.table th{
+    text-align: center;
+    font-size: medium;
+}

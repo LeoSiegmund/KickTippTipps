@@ -1,0 +1,101 @@
+<!DOCTYPE HTML> 
+<html> 
+ 
+<head>
+    <title>
+        KickTipp
+    </title>
+    <style type="text/css">
+        .header{
+            background-color: rgb(13, 27, 42);
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: xx-large;
+            color: rgb(255, 255, 255);
+            padding-top: 1%;
+            padding-bottom: 1%;
+        }
+
+        .body{
+            background-color: rgb(224, 225, 221);
+            align-items: stretch;
+        }
+
+        .button{
+            background-color: rgb(27, 38, 59);
+            border-radius:6px;
+            border:1px solid #dcdcdc;
+            display:inline-block;
+            cursor:pointer;
+            font-size:15px;
+            font-weight:bold;
+            padding:6px 24px;
+            color: rgb(255, 255, 255);
+        }
+
+        .table{
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            min-width: 80%;
+            min-height: 80%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-style: solid;
+            border-color: rgb(65, 90, 119);
+            border-radius: 8px;
+            margin: auto;
+            background-color: rgb(227, 234, 255);
+        }
+
+        .table th{
+            font-size: large;
+            font-weight: bold;
+            border-radius: top 8px;
+            padding:10px 5px;
+            border-bottom: 2px solid black;
+        }
+
+        .table td{
+            text-align: center;
+            font-size: medium;
+            font-weight: lighter;
+            padding:10px 5px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function httpGet(theUrl)
+            {
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+                xmlHttp.send( null );
+                return xmlHttp.responseText;
+            }
+            function showTable(){
+                var tableheader = '<table class="table"> <tr>'; 
+                tableheader += "<th>Verein</th><th>Punkte</th><th>Tore</th><th>Gegentore</th></tr>";
+                var tabletext = "";
+                alle = JSON.parse(httpGet("http://localhost:9000/tabelle"));
+                for (var i = 0; i < alle.length; i++) {
+                    var verein = alle[i];
+                    tabletext += "<tr><td>" + verein.name
+                    tabletext += "<td>" + verein.p + "</td>";
+                    tabletext += "<td>" + verein.t + "</td>";
+                    tabletext += "<td>" + verein.gt + "</td></tr>";
+                }
+                var tableclosing = "</table>"; 
+                var fulltext = tableheader + tabletext + tableclosing;
+                document.getElementById('showwindowData').innerHTML = fulltext;
+            }
+    </script>
+</head>
+<header class="header">
+    Bundesliga
+</header>
+<body id = "body" class="body">  
+    <div id="showwindowData"></div>
+    <button class="button" onclick = "showTable();">
+        Tabelle anzeigen
+    </button>
+</body>
+</html>
