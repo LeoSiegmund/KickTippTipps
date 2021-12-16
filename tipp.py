@@ -18,7 +18,6 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 
-# Verein Class
 class Data(db.Model):
     name = db.Column(db.String, primary_key=True)
     p = db.Column(db.Integer)
@@ -32,7 +31,6 @@ class Data(db.Model):
         self.gt = 0
 
 
-# Data Schema
 class vereinSchema(ma.Schema):
     class Meta:
         fields = ('name', 'p', 't', 'gt')
