@@ -5,6 +5,7 @@
     <title>
         KickTipp
     </title>
+    <link rel="icon" href="favicon.svg">
     <style type="text/css">
         .header{
             background-color: rgb(13, 27, 42);
@@ -22,15 +23,18 @@
         }
 
         .button{
-            background-color: rgb(27, 38, 59);
+            color: rgb(27, 38, 59);
             border-radius:6px;
-            border:1px solid #dcdcdc;
+            border:1px solid rgb(27, 38, 59);
             display:inline-block;
             cursor:pointer;
             font-size:15px;
             font-weight:bold;
             padding:6px 24px;
-            color: rgb(255, 255, 255);
+            background-color: rgb(255, 255, 255);
+        }
+        .button:hover{
+            background-color: rgb(173, 173, 173);
         }
 
         .table{
@@ -44,6 +48,7 @@
             border-color: rgb(65, 90, 119);
             border-radius: 8px;
             margin: auto;
+            margin-top: 1%;
             background-color: rgb(227, 234, 255);
         }
 
@@ -61,39 +66,142 @@
             font-weight: lighter;
             padding:10px 5px;
         }
+
+        .outerGrid{
+            display: inline-flex;
+            width: 100%;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .leftGrid{
+            width: 65%;
+        }
+
+        .rightGrid{
+            width: 35%;
+            font-size: xx-large;
+            font-weight: bolder;
+            padding-top: 6%;
+            padding-bottom: 10%;
+            justify-content: center;
+        }
+
+        .between{
+            padding-left: 3%;
+            padding-right: 3%;
+        }
+
+        .inputNum{
+            width: 50px;
+            margin: 2%;
+            font-size: large;
+        }
+
+        .inputText{
+            width: 150px;
+            margin: 2%;
+            font-size: large;
+        }
     </style>
 
     <script type="text/javascript">
-        function httpGet(theUrl)
-            {
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-                xmlHttp.send( null );
-                return xmlHttp.responseText;
+        function httpGet(url){
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", url, false ); // false for synchronous request
+            xmlHttp.send( null );
+            return xmlHttp.responseText;
+        }
+        function httpPost(url, json){
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "POST", url); // false for synchronous request
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.send(json);
+            return xmlHttp.responseText;
+        }
+        function newSpiel(){
+            teilnehmer0 = document.getElementById("teilnehmer0").value;
+            teilnehmer1 = document.getElementById("teilnehmer1").value;
+            ergebnis0 = document.getElementById("ergebnis0").value;
+            ergebnis1 = document.getElementById("ergebnis1").value;
+            json = '{"Spiele" : [{"Teilnehmer":["' + teilnehmer0 + '","' + teilnehmer1 + '"], "Ergebnis": [' + ergebnis0 + ',' + ergebnis1 + '] }] }';
+            httpPost("http://localhost:9000/new_spieltag", json);
+            showTable();
+            resetSpiel();
+        }
+        function newTipp(){
+            document.getElementById("tipp0").value = 2;
+            document.getElementById("tipp1").value = 1;
+        }
+        function resetSpiel(){
+            document.getElementById("teilnehmer0").value = "";
+            document.getElementById("teilnehmer1").value = "";
+            document.getElementById("ergebnis0").value = "";
+            document.getElementById("ergebnis1").value = "";
+        }
+        function resetTipp(){
+            document.getElementById("tippTeilnehmer0").value = "";
+            document.getElementById("tippTeilnehmer1").value = "";
+            document.getElementById("tipp0").value = "";
+            document.getElementById("tipp1").value = "";
+        }
+        function showTable(){
+            var tableheader = '<table class="table"> <tr>'; 
+            tableheader += "<th>Verein</th><th>Spiele</th><th>Punkte</th><th>Tore</th><th>Gegentore</th></tr>";
+            var tabletext = "";
+            alle = JSON.parse(httpGet("http://localhost:9000/tabelle"));
+            for (var i = 0; i < alle.length; i++) {
+                var verein = alle[i];
+                tabletext += "<tr><td>" + verein.name
+                tabletext += "<td>" + verein.s + "</td>";
+                tabletext += "<td>" + verein.p + "</td>";
+                tabletext += "<td>" + verein.t + "</td>";
+                tabletext += "<td>" + verein.gt + "</td></tr>";
             }
-            function showTable(){
-                var tableheader = '<table class="table"> <tr>'; 
-                tableheader += "<th>Verein</th><th>Punkte</th><th>Tore</th><th>Gegentore</th></tr>";
-                var tabletext = "";
-                alle = JSON.parse(httpGet("http://localhost:9000/tabelle"));
-                for (var i = 0; i < alle.length; i++) {
-                    var verein = alle[i];
-                    tabletext += "<tr><td>" + verein.name
-                    tabletext += "<td>" + verein.p + "</td>";
-                    tabletext += "<td>" + verein.t + "</td>";
-                    tabletext += "<td>" + verein.gt + "</td></tr>";
-                }
-                var tableclosing = "</table>"; 
-                var fulltext = tableheader + tabletext + tableclosing;
-                document.getElementById('showwindowData').innerHTML = fulltext;
-            }
+            var tableclosing = "</table>"; 
+            var fulltext = tableheader + tabletext + tableclosing;
+            document.getElementById('showwindowData').innerHTML = fulltext;
+        }
     </script>
 </head>
 <header class="header">
     Bundesliga
 </header>
-<body id = "body" class="body">  
-    <div id="showwindowData"></div>
+<body id = "body" class="body"> 
+    <div class="outerGrid">
+        <div class="leftGrid">
+            <div id="showwindowData"></div>
+        </div>
+        <div class="rightGrid">
+            <div style="margin-bottom: 5%;">Ergebnis</div>
+            <div style="display:flex; justify-content: center;">
+                <input id="teilnehmer0" class="inputText"></input>
+                <div class="between">vs</div>
+                <input id="teilnehmer1" class="inputText"></input>
+            </div>
+            <div style="display:flex; justify-content: center;">
+                <input type="number" id="ergebnis0" class="inputNum"></input>
+                <div class="between">:</div>
+                <input type="number" id="ergebnis1" class="inputNum"></input>
+            </div>
+            <button class="button" onclick = "newSpiel();">Eingabe</button>
+            <button class="button" onclick="resetSpiel();">Reset</button>
+
+            <div style="margin-top: 10%; margin-bottom: 5%;">Tipp</div>
+            <div style="display:flex; justify-content: center;">
+                <input class="inputText" id="tippTeilnehmer0"></input>
+                <div class="between">vs</div>
+                <input class="inputText" id="tippTeilnehmer1"></input>
+            </div>
+            <div style="display:flex; justify-content: center;">
+                <input type="number" id="tipp0" class="inputNum"></input>
+                <div class="between">:</div>
+                <input type="number" id="tipp1" class="inputNum"></input>
+            </div>
+            <button class="button" onclick="newTipp();">Eingabe</button>
+            <button class="button" onclick="resetTipp();">Reset</button>
+        </div>
+    </div> 
     <button class="button" onclick = "showTable();">
         Tabelle anzeigen
     </button>
