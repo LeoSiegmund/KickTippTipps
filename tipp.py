@@ -5,6 +5,7 @@ from sqlalchemy import desc
 import os
 import math
 import numpy as np
+import json
 
 # Init app
 app = Flask(__name__)
@@ -187,6 +188,19 @@ def get_tabelle():
     result = jsonify(vereine_schema.dump(all_data))
     result.headers.add("Access-Control-Allow-Origin", "*")
     return result
+
+
+@app.route('/set_verein', methods=['PATCH'])
+def set_verein():
+    verein = request.json['Verein']
+    data = Verein.query.get(verein['name'])
+    data.s = verein['s']
+    data.p = verein['p']
+    data.t = verein['t']
+    data.gt = verein['gt']
+    db.session.commit()
+
+    return str(data)
 
 
 @app.route('/reset', methods=['GET'])
