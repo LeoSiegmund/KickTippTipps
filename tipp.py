@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from sqlalchemy import desc
 import os
+import math
+import numpy as np
+import json
 
 # Init app
 app = Flask(__name__)
@@ -120,12 +123,84 @@ def add_spieltag():
     return str(ergebnisse)
 
 
+@app.route('/new_tipp', methods=['POST'])
+def generate_tipp():
+    spiel = request.json['Teilnehmer']
+    var = 1
+    sigma = math.sqrt(var)
+
+    verein1 = spiel[0]
+    verein2 = spiel[1]
+
+    data1 = Verein.query.get(verein1)
+    mu = data1.t / data1.s
+    tore1 = np.random.normal(mu, sigma)
+    if(tore1 < 1):
+        tore1 = 0
+    if(tore1 >= 1 and tore1 < 2):
+        tore1 = 1
+    elif(tore1 >= 2 and tore1 < 3):
+        tore1 = 2
+    elif(tore1 >= 3 and tore1 < 4):
+        tore1 = 3
+    elif(tore1 >= 4 and tore1 < 5):
+        tore1 = 4
+    elif(tore1 >= 5 and tore1 < 6):
+        tore1 = 5
+    elif(tore1 >= 6 and tore1 < 7):
+        tore1 = 6
+    elif(tore1 >= 7 and tore1 < 8):
+        tore1 == 7
+    elif(tore1 >= 8):
+        tore1 = 8
+
+    data2 = Verein.query.get(verein2)
+    mu = data2.t / data2.s
+    tore2 = np.random.normal(mu, sigma)
+    if(tore2 < 1):
+        tore2 = 0
+    if(tore2 >= 1 and tore2 < 2):
+        tore2 = 1
+    elif(tore2 >= 2 and tore2 < 3):
+        tore2 = 2
+    elif(tore2 >= 3 and tore2 < 4):
+        tore2 = 3
+    elif(tore2 >= 4 and tore2 < 5):
+        tore2 = 4
+    elif(tore2 >= 5 and tore2 < 6):
+        tore2 = 5
+    elif(tore2 >= 6 and tore2 < 7):
+        tore2 = 6
+    elif(tore2 >= 7 and tore2 < 8):
+        tore2 == 7
+    elif(tore2 >= 8):
+        tore2 = 8
+
+    ergebnis = jsonify({"Ergebnis": [tore1, tore2]})
+
+    return ergebnis    
+
+
+
 @app.route('/tabelle', methods=['GET'])
 def get_tabelle():
     all_data = Verein.query.order_by(desc(Verein.p)).all()
     result = jsonify(vereine_schema.dump(all_data))
     result.headers.add("Access-Control-Allow-Origin", "*")
     return result
+
+
+@app.route('/set_verein', methods=['PATCH'])
+def set_verein():
+    verein = request.json['Verein']
+    data = Verein.query.get(verein['name'])
+    data.s = verein['s']
+    data.p = verein['p']
+    data.t = verein['t']
+    data.gt = verein['gt']
+    db.session.commit()
+
+    return str(data)
 
 
 @app.route('/reset', methods=['GET'])

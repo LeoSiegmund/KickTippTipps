@@ -114,7 +114,7 @@
         }
         function httpPost(url, json){
             var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open( "POST", url); // false for synchronous request
+            xmlHttp.open( "POST", url, false); // false for synchronous request
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.send(json);
             return xmlHttp.responseText;
@@ -130,8 +130,12 @@
             resetSpiel();
         }
         function newTipp(){
-            document.getElementById("tipp0").value = 2;
-            document.getElementById("tipp1").value = 1;
+            tippTeilnehmer0 = document.getElementById("tippTeilnehmer0").value;
+            tippTeilnehmer1 = document.getElementById("tippTeilnehmer1").value;
+            json = '{"Teilnehmer": ["' + tippTeilnehmer0 + '","' + tippTeilnehmer1 + '"]}'
+            ergebnis = JSON.parse(httpPost("http://localhost:9000/new_tipp", json))
+            document.getElementById("tipp0").value = ergebnis.Ergebnis[0];
+            document.getElementById("tipp1").value = ergebnis.Ergebnis[1];
         }
         function resetSpiel(){
             document.getElementById("teilnehmer0").value = "";
