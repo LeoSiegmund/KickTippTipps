@@ -35,6 +35,7 @@ class Verein(db.Model):
         self.t = 0
         self.gt = 0
 
+
 class vereinSchema(ma.Schema):
     class Meta:
         fields = ('name', 's', 'p', 't', 'gt')
@@ -74,7 +75,7 @@ def add_spieltag():
         tore1 = spiel['Ergebnis'][0]
         tore2 = spiel['Ergebnis'][1]
 
-        if(tore1 > tore2):          #handling win for team 1
+        if(tore1 > tore2):  # handling win for team 1
             #print(verein1, "hat gewonnen")
             data = Verein.query.get(verein1)
             data.s = data.s + 1
@@ -89,7 +90,7 @@ def add_spieltag():
             data.gt = data.gt + tore1
             db.session.commit()
 
-        if(tore2 > tore1):          #handling win for team 2
+        if(tore2 > tore1):  # handling win for team 2
             #print(verein2, "hat gewonnen")
             data = Verein.query.get(verein2)
             data.s = data.s + 1
@@ -104,8 +105,8 @@ def add_spieltag():
             data.gt = data.gt + tore2
             db.session.commit()
 
-        if(tore1 == tore2):         #handling draw game
-            #print("Unentschieden")
+        if(tore1 == tore2):  # handling draw game
+            # print("Unentschieden")
             data = Verein.query.get(verein1)
             data.s = data.s + 1
             data.p = data.p + 1
@@ -178,8 +179,7 @@ def generate_tipp():
 
     ergebnis = jsonify({"Ergebnis": [tore1, tore2]})
 
-    return ergebnis    
-
+    return ergebnis
 
 
 @app.route('/tabelle', methods=['GET'])
